@@ -5,7 +5,6 @@ class CartService {
     static async addProductToCart(cartProduct: CartProduct) {
         try {
             const result = await CartProductModel.create(cartProduct);
-            console.log(result)
             return result;
         } catch (err) {
             throw new Error('Failed to add product to cart');
@@ -50,11 +49,11 @@ class CartService {
         }
     }
 
-    static async deleteCartProduct(id: string) {
+    static async deleteCartProduct(email: string, productId: string) {
         try {
-            const result = await CartProductModel.findByIdAndDelete(id);
+            const result = await CartProductModel.findOneAndDelete({ email, productId });
             if (!result) {
-                throw new Error('Cart product not found');
+                throw new Error('Cart product not found for this user');
             }
             return result;
         } catch (err) {

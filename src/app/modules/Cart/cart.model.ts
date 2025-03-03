@@ -16,7 +16,7 @@ const cartProductSchema = new Schema<CartProduct>({
   productId: { type: String, ref: 'Product', required: true },
   quantity: { type: Number, default: 1 },
   productName: { type: String },
-  price: { type: Number },
+  price: { type: Number, required: true },
   productimage: { type: String },
   productType: { type: String },
   productModel: { type: String },
