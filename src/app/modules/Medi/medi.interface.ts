@@ -8,7 +8,7 @@ export interface Medicine {
     tags: string[];
     warnings: string[];
     sideEffects: string[];
-    preparation: string;
+    // preparation: string;
     requiresPrescription: boolean;
     inStock: boolean;
     quantity: number;

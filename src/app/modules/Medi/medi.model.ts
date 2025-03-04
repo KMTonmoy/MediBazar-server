@@ -13,7 +13,7 @@ const MedicineSchema = new Schema(
     tags: { type: [String], default: [] },
     warnings: { type: [String], default: [] },
     sideEffects: { type: [String], default: [] },
-    preparation: { type: String, required: true },
+    // preparation: { type: String, required: true },
     prescriptionImage: { type: String, required: false },
     IsDrPrescriptionRequired: { type: Boolean, required: true }, 
   },
