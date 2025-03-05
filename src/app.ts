@@ -5,6 +5,7 @@ import { UserRoutes } from './app/User/user.route';
 import { CartRoutes } from './app/modules/Cart/cart.route';
 // import { PayRoutes } from './app/modules/Payment/pay.route';
 import { MedicineRoutes } from './app/modules/Medi/medi.route';
+import { PayRoutes } from './app/modules/Payment/pay.route';
 
 const app: Application = express();
 
@@ -20,7 +21,7 @@ app.use('/api', UserRoutes);
 app.use('/api', MedicineRoutes);
 app.use('/api', OrderRoutes);
 app.use('/api', CartRoutes);
-// app.use('/api', PayRoutes);
+app.use('/api', PayRoutes);
 
 app.get('/', (req: Request, res: Response) => {
     res.send(`Medicine Store Running Here !!!`);

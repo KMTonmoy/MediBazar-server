@@ -1,95 +1,34 @@
-// import Stripe from 'stripe';
-// import PaymentModel from './pay.model';
-// import { Payment } from './pay.interface';
+import Stripe from 'stripe';
+import { PaymentRequest, PaymentResponse, SavePaymentRequest } from './pay.interface';
+import Payment from './pay.model';
 
-// const stripe = new Stripe("sk_test_51PLRDh1ER2eQQaKO62FDISx1JSEYIssRAxTTkCbDLF9dwtr65GpWuRQNbx7WTOCRLEqIH8TH7oyPWDiDeiembWQp00Lbh4F97W", {});
+const stripe = new Stripe('sk_test_51PLRDh1ER2eQQaKO62FDISx1JSEYIssRAxTTkCbDLF9dwtr65GpWuRQNbx7WTOCRLEqIH8TH7oyPWDiDeiembWQp00Lbh4F97W', {
+    apiVersion: '2020-08-27',
+});
 
-// export const createPaymentIntent = async (price: number) => {
-//     const amount = Math.round(price * 100);
-//     const paymentIntent = await stripe.paymentIntents.create({
-//         amount,
-//         currency: 'usd',
-//         payment_method_types: ['card'],
-//     });
-//     return paymentIntent.client_secret;
-// };
+export const createPaymentIntentService = async (paymentRequest: PaymentRequest): Promise<PaymentResponse> => {
+    const { email, amount, cartItems } = paymentRequest;
 
-// export const getAllPayments = async () => {
-//     return await PaymentModel.find();
-// };
+    const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount * 100,
+        currency: 'usd',
+        receipt_email: email,
+    });
 
-// export const getPaymentsByEmail = async (email: string) => {
-//     return await PaymentModel.find({ email });
-// };
+    return {
+        clientSecret: paymentIntent.client_secret,
+    };
+};
 
-// export const createPayment = async (payment: Payment) => {
-//     const newPayment = new PaymentModel(payment);
-//     return await newPayment.save();
-// };
+export const savePaymentService = async (paymentData: SavePaymentRequest): Promise<void> => {
+    const { email, amount, cartItems, status } = paymentData;
 
-// // export const savePaymentToDB = async (email: string, productIds: string[], price: number, transactionId: string, paymentStatus: string) => {
-// //     try {
-// //         console.log(productIds)
-// //         const payment: Payment = {
-// //             email,
-// //             orderdProducts: productIds,
-// //             amount: price,
-// //             currency: 'USD',
-// //             paymentMethodId: transactionId,
-// //             status: paymentStatus,
-// //         };
+    const newPayment = new Payment({
+        email,
+        amount,
+        cartItems,
+        status,
+    });
 
-// //         const newPayment = new PaymentModel(payment);
-// //         await newPayment.save();
-
-// //         return newPayment;
-// //     } catch (error) {
-// //         throw new Error('Error saving payment data');
-// //     }
-// // };
-
-
-
-
-// export const savePaymentToDB = async (
-//     email: string,
-//     products: Array<any>, // Ensure this is an array of full product data
-//     price: number,
-//     transactionId: string,
-//     paymentStatus: string
-// ) => {
-//     try {
-//         // Log the products to verify their structure
-//         console.log('Products array:', products);
-
-//         // Mapping the products to match the schema
-//         const orderedProducts = products.map(product => ({
-//             productId: product.productId,
-//             productName: product.productName,
-//             productType: product.productType,
-//             productModel: product.productModel,
-//             productImage: product.productImage,
-//             price: product.price,
-//             quantity: product.quantity
-//         }));
-
-//         console.log('Ordered products:', orderedProducts);
-
-//         const payment: Payment = {
-//             email,
-//             amount: price,
-//             currency: 'USD',
-//             paymentMethodId: transactionId,
-//             status: paymentStatus,
-//             orderedProducts: orderedProducts,
-//         };
-
-//         const newPayment = new PaymentModel(payment);
-//         await newPayment.save();
-
-//         return newPayment;
-//     } catch (error) {
-//         console.error('Error saving payment data:', error);
-//         throw new Error('Error saving payment data');
-//     }
-// };
+    await newPayment.save();
+};

@@ -1,51 +1,54 @@
-// import { Request, Response } from 'express';
-// import { createPayment, createPaymentIntent, getAllPayments, getPaymentsByEmail, savePaymentToDB } from './pay.service';
+import { Request, Response } from 'express';
+import Stripe from 'stripe';
+import Payment from './pay.model';
+import { PaymentRequest, PaymentResponse, SavePaymentRequest } from './pay.interface';
 
-// export const createPaymentIntentController = async (req: Request, res: Response) => {
-//     const { price } = req.body;
-//     try {
-//         const clientSecret = await createPaymentIntent(price);
-//         res.status(200).send({ clientSecret });
-//     } catch (error) {
-//         res.status(500).send({ error: 'Failed to create payment intent' });
-//     }
-// };
+const stripe = new Stripe('sk_test_51PLRDh1ER2eQQaKO62FDISx1JSEYIssRAxTTkCbDLF9dwtr65GpWuRQNbx7WTOCRLEqIH8TH7oyPWDiDeiembWQp00Lbh4F97W', {
+    apiVersion: '2020-08-27',
+});
 
-// export const getAllPaymentsController = async (req: Request, res: Response) => {
-//     try {
-//         const payments = await getAllPayments();
-//         res.status(200).send(payments);
-//     } catch (error) {
-//         res.status(500).send({ error: 'Failed to retrieve payments' });
-//     }
-// };
+export const createPaymentIntent = async (req: Request, res: Response) => {
+    try {
+        const { email, amount, cartItems }: PaymentRequest = req.body;
 
-// export const getPaymentsByEmailController = async (req: Request, res: Response) => {
-//     const email = req.params.email;
-//     try {
-//         const payments = await getPaymentsByEmail(email);
-//         res.status(200).send(payments);
-//     } catch (error) {
-//         res.status(500).send({ error: 'Failed to retrieve payments' });
-//     }
-// };
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: amount * 100,
+            currency: 'usd',
+            receipt_email: email,
+            payment_method_types: ["card"], 
+        });
 
-// export const createPaymentController = async (req: Request, res: Response) => {
-//     const payment = req.body;
-//     try {
-//         const result = await createPayment(payment);
-//         res.status(201).send({ result });
-//     } catch (error) {
-//         res.status(500).send({ error: 'Failed to process payment' });
-//     }
-// };
+        if (!paymentIntent.client_secret) {
+            return res.status(500).send('Payment intent client secret not found');
+        }
 
-// export const savePaymentController = async (req: Request, res: Response) => {
-//     const { email, orderdProducts, price, transactionId, paymentStatus } = req.body;
-//     try {
-//         const result = await savePaymentToDB(email, orderdProducts, price, transactionId, paymentStatus);
-//         res.status(201).send({ message: 'Payment saved successfully', result });
-//     } catch (error) {
-//         res.status(500).send({ error: 'Failed to save payment' });
-//     }
-// };
+        const paymentResponse: PaymentResponse = {
+            clientSecret: paymentIntent.client_secret || '',  
+        };
+
+        res.json(paymentResponse);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Payment creation failed');
+    }
+};
+
+export const savePayment = async (req: Request, res: Response) => {
+    try {
+        const { email, amount, cartItems, status }: SavePaymentRequest = req.body;
+
+        const newPayment = new Payment({
+            email,
+            amount,
+            cartItems,
+            status,
+        });
+
+        await newPayment.save();
+
+        res.status(201).send('Payment saved');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Payment saving failed');
+    }
+};

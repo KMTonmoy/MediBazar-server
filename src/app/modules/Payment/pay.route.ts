@@ -1,18 +1,13 @@
-// import express from 'express';
-// import {
-//     createPaymentController,
-//     createPaymentIntentController,
-//     getAllPaymentsController,
-//     getPaymentsByEmailController,
-//     savePaymentController
-// } from './pay.controller';
+// payment.router.ts
+import { Router } from 'express';
+import { createPaymentIntent, savePayment } from './pay.controller';
 
-// const router = express.Router();
+const router = Router();
 
-// router.post('/create-payment-intent', createPaymentIntentController);
-// router.get('/payments', getAllPaymentsController);
-// router.get('/payments/:email', getPaymentsByEmailController);
-// router.post('/payments', createPaymentController);
-// router.post('/save-payment', savePaymentController);
+// Endpoint for creating a payment intent
+router.post('/create-payment-intent', createPaymentIntent);
 
-// export const PayRoutes = router;
+// Endpoint for saving payment information
+router.post('/save-payment', savePayment);
+
+export const PayRoutes = router;

@@ -1,23 +1,22 @@
-// import mongoose, { Document, Schema } from 'mongoose';
-// import { Payment } from './pay.interface';
+// payment.model.ts
+import mongoose, { Schema, Document } from 'mongoose';
 
-// const paymentSchema: Schema = new Schema({
-//     email: { type: String, required: true },
-//     amount: { type: Number, required: true },
-//     currency: { type: String, required: true },
-//     paymentMethodId: { type: String, required: true },
-//     status: { type: String, default: 'pending' },
-//     orderedProducts: [{
-//         productId: { type: String, required: true },
-//         productName: { type: String, required: true },
-//         productType: { type: String, required: true },
-//         productModel: { type: String, required: true },
-//         productImage: { type: String, required: true },
-//         price: { type: Number, required: true },
-//         quantity: { type: Number, required: true }
-//     }],
-// }, { timestamps: true });
+interface Payment extends Document {
+  email: string;
+  amount: number;
+  cartItems: any[];
+  status: 'success' | 'failed';
+  createdAt: Date;
+}
 
-// const PaymentModel = mongoose.model<Payment & Document>('Payment', paymentSchema);
+const PaymentSchema: Schema = new Schema(
+  {
+    email: { type: String, required: true },
+    amount: { type: Number, required: true },
+    cartItems: { type: Array, required: true },
+    status: { type: String, enum: ['success', 'failed'], required: true },
+  },
+  { timestamps: true }
+);
 
-// export default PaymentModel;
+export default mongoose.model<Payment>('Payment', PaymentSchema);
