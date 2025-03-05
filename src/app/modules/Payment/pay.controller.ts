@@ -59,3 +59,19 @@ export const updateOrderTrack = async (req: Request, res: Response) => {
         res.status(500).send('Order track update failed');
     }
 };
+
+
+
+export const getAllOrders = async (req: Request, res: Response) => {
+    try {
+        const orders = await Payment.find();
+
+        if (!orders || orders.length === 0) {
+            return res.status(404).send('No orders found');
+        }
+
+        res.json(orders);
+    } catch (error) {
+        res.status(500).send('Failed to fetch orders');
+    }
+};
