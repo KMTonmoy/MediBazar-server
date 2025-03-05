@@ -3,11 +3,11 @@ import { PaymentRequest, PaymentResponse, SavePaymentRequest } from './pay.inter
 import Payment from './pay.model';
 
 const stripe = new Stripe('sk_test_51PLRDh1ER2eQQaKO62FDISx1JSEYIssRAxTTkCbDLF9dwtr65GpWuRQNbx7WTOCRLEqIH8TH7oyPWDiDeiembWQp00Lbh4F97W', {
-    apiVersion: '2020-08-27',
+    apiVersion: '2024-12-18.acacia',
 });
 
 export const createPaymentIntentService = async (paymentRequest: PaymentRequest): Promise<PaymentResponse> => {
-    const { email, amount, cartItems } = paymentRequest;
+    const { email, amount } = paymentRequest;
 
     const paymentIntent = await stripe.paymentIntents.create({
         amount: amount * 100,
@@ -15,9 +15,7 @@ export const createPaymentIntentService = async (paymentRequest: PaymentRequest)
         receipt_email: email,
     });
 
-    return {
-        clientSecret: paymentIntent.client_secret,
-    };
+    return { clientSecret: paymentIntent.client_secret };
 };
 
 export const savePaymentService = async (paymentData: SavePaymentRequest): Promise<void> => {
@@ -27,8 +25,13 @@ export const savePaymentService = async (paymentData: SavePaymentRequest): Promi
         email,
         amount,
         cartItems,
+        ordertrack: "pending",
         status,
     });
 
     await newPayment.save();
+};
+
+export const updateOrderTrackService = async (id: string, ordertrack: "pending" | "processing" | "shipped" | "delivered"): Promise<void> => {
+    await Payment.findByIdAndUpdate(id, { ordertrack });
 };

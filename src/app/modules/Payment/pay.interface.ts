@@ -1,4 +1,3 @@
-// payment.interface.ts
 export interface PaymentRequest {
     email: string;
     amount: number;
@@ -13,5 +12,6 @@ export interface SavePaymentRequest {
     email: string;
     amount: number;
     cartItems: any[];
+    ordertrack: "pending" | "processing" | "shipped" | "delivered";
     status: 'success' | 'failed';
 }

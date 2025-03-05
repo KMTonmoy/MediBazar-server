@@ -1,13 +1,10 @@
-// payment.router.ts
 import { Router } from 'express';
-import { createPaymentIntent, savePayment } from './pay.controller';
+import { createPaymentIntent, savePayment, updateOrderTrack } from './pay.controller';
 
 const router = Router();
 
-// Endpoint for creating a payment intent
 router.post('/create-payment-intent', createPaymentIntent);
-
-// Endpoint for saving payment information
 router.post('/save-payment', savePayment);
+router.patch('/update-order/:id', updateOrderTrack);
 
 export const PayRoutes = router;
